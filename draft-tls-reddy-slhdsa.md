@@ -114,18 +114,18 @@ As defined in {{RFC8446}}, the SignatureScheme namespace is used for the negotia
 
 ~~~
 enum {
-  slhdsa128s_sha2 (0x0911),
-  slhdsa128f_sha2 (0x0912),
-  slhdsa192s_sha2 (0x0913),
-  slhdsa192f_sha2 (0x0914),
-  slhdsa256s_sha2 (0x0915),
-  slhdsa256f_sha2 (0x0916),
-  slhdsa128s_shake (0x0917),
-  slhdsa128f_shake (0x0918),
-  slhdsa192s_shake (0x0919),
-  slhdsa192f_shake (0x091A),
-  slhdsa256s_shake (0x091B),
-  slhdsa256f_shake (0x091C)
+  slhdsa_sha2_128s (0x0911),
+  slhdsa_sha2_128f (0x0912),
+  slhdsa_sha2_192s (0x0913),
+  slhdsa_sha2_192f (0x0914),
+  slhdsa_sha2_256s (0x0915),
+  slhdsa_sha2_256f (0x0916),
+  slhdsa_shake_128s (0x0917),
+  slhdsa_shake_128f (0x0918),
+  slhdsa_shake_192s (0x0919),
+  slhdsa_shake_192f (0x091A),
+  slhdsa_shake_256s (0x091B),
+  slhdsa_shake_256f (0x091C)
 } SignatureScheme;
 ~~~
 
@@ -151,19 +151,18 @@ according to the procedures in {{Section 6 of TLSIANA}}.
 
 | Value   | Description                        | Recommended | Reference      |
 |---------|------------------------------------|-------------|----------------|
-| 0x0911  | slhdsa128s_sha2                    | Y           | This document. |
-| 0x0912  | slhdsa128f_sha2                    | Y           | This document. |
-| 0x0913  | slhdsa192s_sha2                    | Y           | This document. |
-| 0x0914  | slhdsa192f_sha2                    | Y           | This document. |
-| 0x0915  | slhdsa256s_sha2                    | Y           | This document. |
-| 0x0916  | slhdsa256f_sha2                    | Y           | This document. |
-| 0x0917  | slhdsa128s_shake                   | Y           | This document. |
-| 0x0918  | slhdsa128f_shake                   | Y           | This document. |
-| 0x0919  | slhdsa192s_shake                   | Y           | This document. |
-| 0x091A  | slhdsa192f_shake                   | Y           | This document. |
-| 0x091B  | slhdsa256s_shake                   | Y           | This document. |
-| 0x091C  | slhdsa256f_shake                   | Y           | This document. |
-
+| 0x0911  | slhdsa_sha2_128s                   | Y           | This document. |
+| 0x0912  | slhdsa_sha2_128f                   | Y           | This document. |
+| 0x0913  | slhdsa_sha2_192s                   | Y           | This document. |
+| 0x0914  | slhdsa_sha2_192f                   | Y           | This document. |
+| 0x0915  | slhdsa_sha2_256s                   | Y           | This document. |
+| 0x0916  | slhdsa_sha2_256f                   | Y           | This document. |
+| 0x0917  | slhdsa_shake_128s                  | Y           | This document. |
+| 0x0918  | slhdsa_shake_128f                  | Y           | This document. |
+| 0x0919  | slhdsa_shake_192s                  | Y           | This document. |
+| 0x091A  | slhdsa_shake_192f                  | Y           | This document. |
+| 0x091B  | slhdsa_shake_256s                  | Y           | This document. |
+| 0x091C  | slhdsa_shake_256f                  | Y           | This document. |
 --- back
 
 # Acknowledgments
