@@ -88,7 +88,9 @@ This document uses terms defined in {{?I-D.ietf-pquip-pqt-hybrid-terminology}}. 
 
 # SLH-DSA SignatureSchemes Types
 
-SLH-DSA utilizes the concept of stateless hash-based signatures. In contrast to stateful signature algorithms, SLH-DSA eliminates the need for maintaining state information during the signing process. SLH-DSA is designed to sign up to 2^64 messages and it offers three security levels. The parameters for each of the security levels were chosen to provide 128 bits of security, 192 bits of security, and 256 bits of security. This document specifies the use of the SLH-DSA algorithm in TLS at three security levels. It includes the small (S) or fast (F) versions of the algorithm and allows for the use of either SHA-256 {{FIPS180}} or SHAKE256 {{FIPS202}} as the hash function. The small version prioritizes smaller signature sizes, making them suitable for resource-constrained environments IoT devices. Conversely, the fast version prioritizes speed over signature size, minimizing the time required to generate and verify signatures. 
+SLH-DSA utilizes the concept of stateless hash-based signatures. In contrast to stateful signature algorithms, SLH-DSA eliminates the need for maintaining state information during the signing process. SLH-DSA is designed to sign up to 2^64 messages and it offers three security levels. The parameters for each of the security levels were chosen to provide 128 bits of security, 192 bits of security, and 256 bits of security. This document specifies the use of the SLH-DSA algorithm in TLS at three security levels. It includes the small (S) or fast (F) versions of the algorithm. For security level 1, SHA-256 ({{FIPS180}}) is used. For security levels 3 and 5, SHA-512 ({{FIPS180}}) is used. SHAKE256 ({{FIPS202}}) is applicable for all security levels. 
+
+The small version prioritizes smaller signature sizes, making them suitable for resource-constrained environments IoT devices. Conversely, the fast version prioritizes speed over signature size, minimizing the time required to generate signatures. However, signature verification with the small version is faster than with the fast version.
 
 The following combinations are defined in SLH-DSA {{FIPS205}}:
 
@@ -112,18 +114,18 @@ As defined in {{RFC8446}}, the SignatureScheme namespace is used for the negotia
 
 ~~~
 enum {
-  slhdsa128s_sha256 (0x0911),
-  slhdsa128f_sha256 (0x0912),
-  slhdsa192s_sha256 (0x0913),
-  slhdsa192f_sha256 (0x0914),
-  slhdsa256s_sha256 (0x0915),
-  slhdsa256f_sha256 (0x0916),
-  slhdsa128s_shake (0x0917),
-  slhdsa128f_shake (0x0918),
-  slhdsa192s_shake (0x0919),
-  slhdsa192f_shake (0x091A),
-  slhdsa256s_shake (0x091B),
-  slhdsa256f_shake (0x091C)
+  slhdsa_sha2_128s (0x0911),
+  slhdsa_sha2_128f (0x0912),
+  slhdsa_sha2_192s (0x0913),
+  slhdsa_sha2_192f (0x0914),
+  slhdsa_sha2_256s (0x0915),
+  slhdsa_sha2_256f (0x0916),
+  slhdsa_shake_128s (0x0917),
+  slhdsa_shake_128f (0x0918),
+  slhdsa_shake_192s (0x0919),
+  slhdsa_shake_192f (0x091A),
+  slhdsa_shake_256s (0x091B),
+  slhdsa_shake_256f (0x091C)
 } SignatureScheme;
 ~~~
 
@@ -149,22 +151,21 @@ according to the procedures in {{Section 6 of TLSIANA}}.
 
 | Value   | Description                        | Recommended | Reference      |
 |---------|------------------------------------|-------------|----------------|
-| 0x0911  | slhdsa128s_sha256                  | Y           | This document. |
-| 0x0912  | slhdsa128f_sha256                  | Y           | This document. |
-| 0x0913  | slhdsa192s_sha256                  | Y           | This document. |
-| 0x0914  | slhdsa192f_sha256                  | Y           | This document. |
-| 0x0915  | slhdsa256s_sha256                  | Y           | This document. |
-| 0x0916  | slhdsa256f_sha256                  | Y           | This document. |
-| 0x0917  | slhdsa128s_shake                   | Y           | This document. |
-| 0x0918  | slhdsa128f_shake                   | Y           | This document. |
-| 0x0919  | slhdsa192s_shake                   | Y           | This document. |
-| 0x091A  | slhdsa192f_shake                   | Y           | This document. |
-| 0x091B  | slhdsa256s_shake                   | Y           | This document. |
-| 0x091C  | slhdsa256f_shake                   | Y           | This document. |
-
+| 0x0911  | slhdsa_sha2_128s                   | Y           | This document. |
+| 0x0912  | slhdsa_sha2_128f                   | Y           | This document. |
+| 0x0913  | slhdsa_sha2_192s                   | Y           | This document. |
+| 0x0914  | slhdsa_sha2_192f                   | Y           | This document. |
+| 0x0915  | slhdsa_sha2_256s                   | Y           | This document. |
+| 0x0916  | slhdsa_sha2_256f                   | Y           | This document. |
+| 0x0917  | slhdsa_shake_128s                  | Y           | This document. |
+| 0x0918  | slhdsa_shake_128f                  | Y           | This document. |
+| 0x0919  | slhdsa_shake_192s                  | Y           | This document. |
+| 0x091A  | slhdsa_shake_192f                  | Y           | This document. |
+| 0x091B  | slhdsa_shake_256s                  | Y           | This document. |
+| 0x091C  | slhdsa_shake_256f                  | Y           | This document. |
 --- back
 
 # Acknowledgments
 {:numbered="false"}
 
-Thanks to Bas Westerbaan for the discussion and comments.
+Thanks to Bas Westerbaan, John Mattsson and Peter Campbell for the discussion and comments.
