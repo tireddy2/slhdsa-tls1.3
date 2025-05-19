@@ -137,7 +137,7 @@ enum {
 
 It is important to note that the slhdsa* entries represent the pure versions of these algorithms and should not be confused with prehashed variant HashSLH-DSA, also defined in {{FIPS205}}.
 
-In TLS, the data used for generating a digital signature is unique for each TLS session, as it includes the entire handshake. Thus, SLH-DSA can utilize the deterministic version. The context parameter defined in {{FIPS205}} Algorithm 23 MUST be an empty string.
+SLH-DSA supports two signing modes: deterministic and hedged. In the deterministic mode, the signature is derived solely from the message and the private key, without requiring fresh randomness at signing time. While this eliminates dependence on an external random number generator (RNG), it may increase susceptibility to side-channel attacks, such as fault injection. The hedged mode mitigates this risk by incorporating both fresh randomness generated at signing time and precomputed randomness embedded in the private key, thereby offering stronger protection against such attacks. In the context of TLS, authentication signatures are computed over unique handshake transcripts, making each signature input distinct for every session. This property allows the use of either signing mode. Therefore, the hedged signing mode can be leveraged to provide protection against  side-channel attacks. The choice between deterministic and hedged modes does not affect interoperability, as the verification process is the same for both. In both modes, the context parameter defined in Algorithm 23 of {{FIPS205}} MUST be set to the empty string.
 
 The signature MUST be computed and verified as specified in {{Section 4.4.3 of RFC8446}}.
 
@@ -157,18 +157,18 @@ according to the procedures in {{Section 6 of TLSIANA}}.
 
 | Value   | Description                        | Recommended | Reference      |
 |---------|------------------------------------|-------------|----------------|
-| 0x0911  | slhdsa_sha2_128s                   | Y           | This document. |
-| 0x0912  | slhdsa_sha2_128f                   | Y           | This document. |
-| 0x0913  | slhdsa_sha2_192s                   | Y           | This document. |
-| 0x0914  | slhdsa_sha2_192f                   | Y           | This document. |
-| 0x0915  | slhdsa_sha2_256s                   | Y           | This document. |
-| 0x0916  | slhdsa_sha2_256f                   | Y           | This document. |
-| 0x0917  | slhdsa_shake_128s                  | Y           | This document. |
-| 0x0918  | slhdsa_shake_128f                  | Y           | This document. |
-| 0x0919  | slhdsa_shake_192s                  | Y           | This document. |
-| 0x091A  | slhdsa_shake_192f                  | Y           | This document. |
-| 0x091B  | slhdsa_shake_256s                  | Y           | This document. |
-| 0x091C  | slhdsa_shake_256f                  | Y           | This document. |
+| 0x0911  | slhdsa_sha2_128s                   | N           | This document. |
+| 0x0912  | slhdsa_sha2_128f                   | N           | This document. |
+| 0x0913  | slhdsa_sha2_192s                   | N           | This document. |
+| 0x0914  | slhdsa_sha2_192f                   | N           | This document. |
+| 0x0915  | slhdsa_sha2_256s                   | N           | This document. |
+| 0x0916  | slhdsa_sha2_256f                   | N           | This document. |
+| 0x0917  | slhdsa_shake_128s                  | N           | This document. |
+| 0x0918  | slhdsa_shake_128f                  | N           | This document. |
+| 0x0919  | slhdsa_shake_192s                  | N           | This document. |
+| 0x091A  | slhdsa_shake_192f                  | N           | This document. |
+| 0x091B  | slhdsa_shake_256s                  | N           | This document. |
+| 0x091C  | slhdsa_shake_256f                  | N           | This document. |
 --- back
 
 # Acknowledgments
