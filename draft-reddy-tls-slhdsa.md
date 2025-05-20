@@ -147,7 +147,7 @@ The schemes defined in this document MUST NOT be used in TLS 1.2 {{RFC5246}}. A 
 
 # Security Considerations
 
-The security considerations discussed in Section 8 of {{I-D.ietf-lamps-x509-slhdsa}} needs to be taken into account. 
+The security considerations discussed in Section 9 of {{I-D.ietf-lamps-x509-slhdsa}} need to be taken into account. 
 
 
 # IANA Considerations
