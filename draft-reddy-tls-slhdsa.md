@@ -150,7 +150,9 @@ The security considerations discussed in Section 8 of {{I-D.ietf-lamps-x509-slhd
 
 SLH-DSA imposes an upper bound of 2^64 signatures per key. While this limit is extremely large, it is important to consider in long-lived TLS connection deployments, particularly for servers that handle many client connections.
 
-In practice, long-lived TLS connections undergo periodic re-authentication to validate certificate status. Additionally, certificates are typically issued with finite lifetimes, and upon rotation, a new key-pair must be generated to obtain a new certificate. For example, if a server certificate is valid for 1 year and each client connection re-authenticates every 12 hours, only 730 signatures would be generated per client. 
+By default, TLS 1.3 does not support post-handshake server authentication (Section 4.6 of {{RFC8446}}). However, in deployments with long-lived TLS connections, such as DTLS-over-STCP sessions used in 3GPP networks, re-authentication of either peer can be enabled using Exported Authenticators, as defined in {{RFC9261}}. This mechanism applies generically to all signature algorithms, including SLH-DSA, and enables re-authentication with a newly issued certificate without initiating a new TLS session.
+
+Certificates are typically issued with finite lifetimes, and upon rotation, a new key-pair must be generated to obtain a new certificate. For example, if a server certificate is valid for 1 year and each client connection re-authenticates every 12 hours, only 730 signatures would be generated per client. 
 This implies that a single SLH-DSA key could theoretically support up to 2^64 / 730 ≈ 2.52 × 10^16 clients over a certificate's lifetime.
 
 In order to maintain cryptographic safety in high-scale environments, deployments MUST:
