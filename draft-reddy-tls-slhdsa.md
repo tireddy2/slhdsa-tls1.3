@@ -51,6 +51,8 @@ normative:
  I-D.ietf-lamps-x509-slhdsa:
 informative:
   RFC5246:
+  RFC9261:
+  RFC8555:
   FIPS205:
      title: "FIPS 205: Stateless Hash-Based Digital Signature Standard"
      target: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.205.pdf 
@@ -150,7 +152,7 @@ The security considerations discussed in Section 8 of {{I-D.ietf-lamps-x509-slhd
 
 SLH-DSA imposes an upper bound of 2^64 signatures per key. While this limit is extremely large, it is important to consider in long-lived TLS connection deployments, particularly for servers that handle many client connections.
 
-By default, TLS 1.3 does not support post-handshake server authentication (Section 4.6 of {{RFC8446}}). However, in deployments with long-lived TLS connections, such as DTLS-over-STCP sessions used in 3GPP networks, re-authentication of either peer can be enabled using Exported Authenticators, as defined in {{RFC9261}}. This mechanism applies generically to all signature algorithms, including SLH-DSA, and enables re-authentication with a newly issued certificate without initiating a new TLS session. Since only the peer is aware of certificate expiry during an TLS session, it is responsible for triggering re-authentication when necessary for example, immediately after the certificate has expired. Furthermore, as specified in Section 5.2 of {{RFC9261}}, a server is permitted to proactively send an authenticator without a corresponding request from the client, enabling asynchronous re-authentication when needed.
+## Key Lifetime Management
 
 Certificates are typically issued with finite lifetimes, and upon rotation, a new key-pair must be generated to obtain a new certificate. For example, if a server certificate is valid for 1 year and each client connection re-authenticates every 12 hours, only 730 signatures would be generated per client. 
 This implies that a single SLH-DSA key could theoretically support up to 2^64 / 730 ≈ 2.52 × 10^16 clients over a certificate's lifetime.
@@ -162,6 +164,16 @@ In order to maintain cryptographic safety in high-scale environments, deployment
    *  Monitor signature usage in large-scale or high-authentication rate deployments.
 
 These operational safeguards ensure that the number of SLH-DSA signatures generated under a single key remains well within the cryptographic safety margin.
+
+Re-authentication frequency directly impacts signature usage and should be factored into key lifetime planning.
+
+## Re-authentication in Long-Lived TLS Connections
+
+TLS 1.3 does not support post-handshake server authentication by default (see Section 4.6 of {{RFC8446}}). However, in deployments involving long-lived TLS connections, such as DTLS-over-STCP sessions used in 3GPP networks, peer re-authentication can be achieved using Exported Authenticators, as defined in {{RFC9261}}. This mechanism is applicable to all signature algorithms, including PQ schemes such as SLH-DSA, and enables re-authentication with a newly issued certificate without requiring a new TLS handshake.
+
+Re-authentication is typically initiated by the peer that is aware of the certificate's expiration status. Implementations are encouraged to adopt a proactive policy similar to that used by ACME clients ({{RFC8555}}), where certificates are renewed before expiration to ensure continuity of service. For long-lived TLS connections, TLS servers may trigger re-authentication a few hours prior to client certificate expiry. As specified in Section 5.2 of {{RFC9261}}, servers can proactively send an authenticator without a client request, enabling asynchronous re-authentication when necessary.
+
+To prevent a thundering herd problem, where a server attempts to re-authenticate to multiple clients at the same time, implementations SHOULD introduce random jitter or time offsets based on each TLS session's initiation time. This distributes re-authentication events over time and minimizes load spikes on the server.
 
 # IANA Considerations
 
