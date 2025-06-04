@@ -160,8 +160,7 @@ This implies that a single SLH-DSA key could theoretically support up to 2^64 / 
 In order to maintain cryptographic safety in high-scale environments, deployments MUST:
 
    *  Rotate SLH-DSA certificates and keys periodically;
-   *  Avoid reusing SLH-DSA private keys across certificate reissuance;
-   *  Monitor signature usage in large-scale or high-authentication rate deployments.
+   *  Track the number of signatures generated per SLH-DSA private key to ensure it remains well below the 2^64 signature limit.
 
 These operational safeguards ensure that the number of SLH-DSA signatures generated under a single key remains well within the cryptographic safety margin.
 
@@ -171,7 +170,7 @@ Re-authentication frequency directly impacts signature usage and should be facto
 
 TLS 1.3 does not support post-handshake server authentication by default (see Section 4.6 of {{RFC8446}}). However, in deployments involving long-lived TLS connections, such as DTLS-over-STCP sessions used in 3GPP networks, peer re-authentication can be achieved using Exported Authenticators, as defined in {{RFC9261}}. This mechanism is applicable to all signature algorithms, including PQ schemes such as SLH-DSA, and enables re-authentication with a newly issued certificate without requiring a new TLS handshake.
 
-Re-authentication is typically initiated by the peer that is aware of the certificate's expiration status. Implementations are encouraged to adopt a proactive policy similar to that used by ACME clients ({{RFC8555}}), where certificates are renewed before expiration to ensure continuity of service. For long-lived TLS connections, TLS servers may trigger re-authentication a few hours prior to client certificate expiry. As specified in Section 5.2 of {{RFC9261}}, servers can proactively send an authenticator without a client request, enabling asynchronous re-authentication when necessary.
+Re-authentication is typically initiated by the peer that is tracking the remote peer's certificate expiration during a long-lived TLS session. Implementations are recommended to adopt a proactive policy similar to that used by ACME clients ({{RFC8555}}), where certificates are renewed before expiration to ensure continuity of service. For long-lived TLS connections, TLS servers may trigger a authenticator request a few hours prior to client certificate expiry. As specified in Section 5.2 of {{RFC9261}}, a server can proactively send an authenticator without a client request, enabling asynchronous re-authentication when a new server certificate is issued.
 
 To prevent a thundering herd problem, where a server attempts to re-authenticate to multiple clients at the same time, implementations SHOULD introduce random jitter or time offsets based on each TLS session's initiation time. This distributes re-authentication events over time and minimizes load spikes on the server.
 
