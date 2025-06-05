@@ -51,6 +51,8 @@ normative:
  I-D.ietf-lamps-x509-slhdsa:
 informative:
   RFC5246:
+  RFC9261:
+  RFC8555:
   FIPS205:
      title: "FIPS 205: Stateless Hash-Based Digital Signature Standard"
      target: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.205.pdf 
@@ -92,9 +94,9 @@ This document uses terms defined in {{?I-D.ietf-pquip-pqt-hybrid-terminology}}. 
 
 # SLH-DSA SignatureSchemes Types
 
-SLH-DSA utilizes the concept of stateless hash-based signatures. In contrast to stateful signature algorithms, SLH-DSA eliminates the need for maintaining state information during the signing process. SLH-DSA is designed to sign up to 2^64 messages and it offers three security levels. The parameters for each of the security levels were chosen to provide 128 bits of security, 192 bits of security, and 256 bits of security. This document specifies the use of the SLH-DSA algorithm in TLS at three security levels. It includes the small (S) or fast (F) versions of the algorithm. For security level 1, SHA-256 ({{FIPS180}}) is used. For security levels 3 and 5, SHA-512 ({{FIPS180}}) is used. SHAKE256 ({{FIPS202}}) is applicable for all security levels. 
+SLH-DSA {{FIPS205}} utilizes the concept of stateless hash-based signatures. In contrast to stateful signature algorithms, SLH-DSA eliminates the need for maintaining state information during the signing process. SLH-DSA is designed to sign up to 2^64 messages and it offers three security levels. The parameters for security levels 1, 3, and 5 were chosen to provide AES-128, AES-192, and AES-256 bits of security respectively (see Table 2 in Section 10 of {{?I-D.ietf-pquip-pqc-engineers}}). 
 
-The small version prioritizes smaller signature sizes, making them suitable for resource-constrained environments IoT devices. Conversely, the fast version prioritizes speed over signature size, minimizing the time required to generate signatures. However, signature verification with the small version is faster than with the fast version.
+This document specifies the use of the SLH-DSA algorithm in TLS at three security levels. Each security level (1, 3, and 5) defines two variants of the algorithm: a small (S) version and a fast (F) version. The small version prioritizes smaller signature sizes, making them suitable for resource-constrained environments IoT devices. Conversely, the fast version prioritizes speed over signature size, minimizing the time required to generate signatures. However, signature verification with the small version is faster than with the fast version. For hash function selection, the algorithm uses SHA-256 ({{FIPS180}}) for security level 1 and SHA-512 ({{FIPS180}}) for security levels 3 and 5. Alternatively, SHAKE256 ({{FIPS202}}) can be used across all security levels.
 
 The following combinations are defined in SLH-DSA {{FIPS205}}:
 
@@ -111,12 +113,11 @@ The following combinations are defined in SLH-DSA {{FIPS205}}:
 * SLH-DSA-256S-SHAKE
 * SLH-DSA-256F-SHAKE
 
-SLH-DSA does not introduce any new hardness assumptions beyond those inherent to its underlying hash functions. It builds upon established foundations in cryptography, making it a reliable and robust digital signature scheme for a post-quantum world. While attacks on lattice-based schemes like ML-DSA can compromise their security, SLH-DSA will remain unaffected by these attacks due to its distinct mathematical foundations. This ensures the ongoing security of systems and protocols that use SLH-DSA for digital signatures.
+SLH-DSA does not introduce any new hardness assumptions beyond those inherent to its underlying hash functions. It builds upon established foundations in cryptography, making it a reliable and robust digital signature scheme for a post-quantum world. While attacks on lattice-based schemes like ML-DSA are currently hypothetical at the time of writing this document, such attacks, if realized, could compromise their security. SLH-DSA would remain unaffected by these attacks due to its distinct mathematical foundations. This ensures the ongoing security of systems and protocols that use SLH-DSA for digital signatures.
 
 However, ML-DSA outperforms SLH-DSA in both signature generation and validation time, as well as in signature size, making it a recommended choice for end-entity certificates. SLH-DSA, in contrast, offers smaller key sizes but larger signature sizes. Given its well-established hardness assumption, SLH-DSA may be preferred for TLS applications where high confidence in security is a priority, such as for long-lived TLS sessions and deployments where computational costs of signature generation and validation are minor compared to data transmission and processing demands of user data. The findings in {{PQ-TLS-TTLB}} shows that while PQ algorithms increase the TLS 1.3 handshake data size, their effect on connection performance is minimal for large data transfers, especially in low-loss networks. Additionally, SLH-DSA is suitable for use in CA certificates due to its strong cryptographic assurances and smaller key sizes. Its robustness against emerging quantum attacks makes it a dependable choice for trust anchors and long-term security, even though it has larger signature sizes. 
 
-As defined in {{RFC8446}}, the SignatureScheme namespace is used for the negotiation of signature scheme for authentication via the
-"signature_algorithms" and "signature_algorithms_cert" extensions. This document adds new SignatureSchemes types for the SLH-DSA as follows.
+As defined in {{RFC8446}}, the SignatureScheme namespace is used for the negotiation of signature scheme for authentication via the "signature_algorithms" and "signature_algorithms_cert" extensions. This document adds new SignatureSchemes types for the SLH-DSA as follows.
 
 ~~~
 enum {
@@ -137,7 +138,7 @@ enum {
 
 It is important to note that the slhdsa* entries represent the pure versions of these algorithms and should not be confused with prehashed variant HashSLH-DSA, also defined in {{FIPS205}}.
 
-SLH-DSA supports two signing modes: deterministic and hedged. In the deterministic mode, the signature is derived solely from the message and the private key, without requiring fresh randomness at signing time. While this eliminates dependence on an external random number generator (RNG), it may increase susceptibility to side-channel attacks, such as fault injection. The hedged mode mitigates this risk by incorporating both fresh randomness generated at signing time and precomputed randomness embedded in the private key, thereby offering stronger protection against such attacks. In the context of TLS, authentication signatures are computed over unique handshake transcripts, making each signature input distinct for every session. This property allows the use of either signing mode. Therefore, the hedged signing mode can be leveraged to provide protection against  side-channel attacks. The choice between deterministic and hedged modes does not affect interoperability, as the verification process is the same for both. In both modes, the context parameter defined in Algorithm 23 of {{FIPS205}} MUST be set to the empty string.
+SLH-DSA supports two signing modes: deterministic and hedged. In the deterministic mode, the signature is derived solely from the message and the private key, without requiring fresh randomness at signing time. While this eliminates dependence on an external random number generator (RNG), it may increase susceptibility to side-channel attacks, such as fault injection. The hedged mode mitigates this risk by incorporating both fresh randomness generated at signing time and precomputed randomness embedded in the private key, thereby offering stronger protection against such attacks. In the context of TLS, authentication signatures are computed over unique handshake transcripts, making each signature input distinct for every session. This property allows the use of either signing mode. The hedged signing mode can be leveraged to provide protection against side-channel attacks. The choice between deterministic and hedged modes does not affect interoperability, as the verification process is the same for both. In both modes, the context parameter defined in Algorithm 22 and Algorithm 24 of {{FIPS205}} MUST be set to the empty string.
 
 The signature MUST be computed and verified as specified in {{Section 4.4.3 of RFC8446}}.
 
@@ -149,6 +150,29 @@ The schemes defined in this document MUST NOT be used in TLS 1.2 {{RFC5246}}. A 
 
 The security considerations discussed in Section 9 of {{I-D.ietf-lamps-x509-slhdsa}} need to be taken into account. 
 
+SLH-DSA imposes an upper bound of 2^64 signatures per key. While this limit is extremely large, it is important to consider in long-lived TLS connection deployments, particularly for servers that handle many client connections.
+
+## Key Lifetime Management
+
+Certificates are typically issued with finite lifetimes, and upon rotation, a new key-pair must be generated to obtain a new certificate. For example, if a server certificate is valid for 1 year and each client connection re-authenticates every 12 hours, only 730 signatures would be generated per client. 
+This implies that a single SLH-DSA key could theoretically support up to 2^64 / 730 ≈ 2.52 × 10^16 clients over a certificate's lifetime.
+
+In order to maintain cryptographic safety in high-scale environments, deployments MUST:
+
+   *  Rotate SLH-DSA certificates and keys periodically;
+   *  Track the number of signatures generated per SLH-DSA private key to ensure it remains well below the 2^64 signature limit.
+
+These operational safeguards ensure that the number of SLH-DSA signatures generated under a single key remains well within the cryptographic safety margin.
+
+Re-authentication frequency directly impacts signature usage and should be factored into key lifetime planning.
+
+## Re-authentication in Long-Lived TLS Connections
+
+TLS 1.3 does not support post-handshake server authentication by default (see Section 4.6 of {{RFC8446}}). However, in deployments involving long-lived TLS connections, such as DTLS-over-STCP sessions used in 3GPP networks, peer re-authentication can be achieved using Exported Authenticators, as defined in {{RFC9261}}. This mechanism is applicable to all signature algorithms, including PQ schemes such as SLH-DSA, and enables re-authentication with a newly issued certificate without requiring a new TLS handshake.
+
+Re-authentication is typically initiated by the peer that is tracking the remote peer's certificate expiration during a long-lived TLS session. Implementations are recommended to adopt a proactive policy similar to that used by ACME clients ({{RFC8555}}), where certificates are renewed before expiration to ensure continuity of service. TLS servers MAY proactively send an authenticator without a client request (Section 5.2 of {{RFC9261}}), such as when the server is issued a new certificate.
+
+To prevent a thundering herd problem, where a server attempts to re-authenticate to multiple clients at the same time, implementations SHOULD introduce random jitter or time offsets based on each TLS session's initiation time. This distributes re-authentication events over time and minimizes load spikes on the server.
 
 # IANA Considerations
 
