@@ -92,6 +92,16 @@ This document uses terms defined in {{?I-D.ietf-pquip-pqt-hybrid-terminology}}. 
 
 "Post-Quantum Algorithm": An asymmetric cryptographic algorithm that is believed to be secure against attacks using quantum computers as well as classical computers. Post-quantum algorithms can also be called quantum-resistant or quantum-safe algorithms. Examples of quantum-resistant digital signature schemes include ML-DSA and SLH-DSA.
 
+# Applicability of SLH-DSA
+
+Applications that use SLH-DSA need to be aware that the signature sizes of the algorithms specified in this document are generally large. SLH-DSA offers three security levels: 1, 3, and 5, and two parameter variants for each level:
+
+* Small (s) variant, which are optimized for minimal signature size, have signature sizes ranging from 7856 bytes (128-bit) to 29792 bytes (256-bit).
+
+* Fast (f) variant, optimized for faster key generation and signing, have signature sizes ranging from 17088 bytes (128-bit) to 29792 bytes (256-bit). However, they are slower at signature verification.
+
+Despite offering trade-offs between size and performance, all SLH-DSA variants produce significantly larger signatures than traditional signature algorithms. While SLH-DSA increases the size of the TLS 1.3 handshake, its impact on connection performance is minimal in the context of large data transfers, especially over low-loss networks. For instancee, TLS-based protocols are increasingly used to secure long-lived interfaces in critical infrastructure, such as telecommunication networks. In particular, TLS-in-SCTP has been mandated in 3GPP for interfaces such as N2 that use long-lived TLS connections. 
+
 # SLH-DSA SignatureSchemes Types
 
 SLH-DSA {{FIPS205}} utilizes the concept of stateless hash-based signatures. In contrast to stateful signature algorithms, SLH-DSA eliminates the need for maintaining state information during the signing process. SLH-DSA is designed to sign up to 2^64 messages and it offers three security levels. The parameters for security levels 1, 3, and 5 were chosen to provide AES-128, AES-192, and AES-256 bits of security respectively (see Table 2 in Section 10 of {{?I-D.ietf-pquip-pqc-engineers}}). 
