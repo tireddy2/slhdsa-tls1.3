@@ -92,6 +92,16 @@ This document uses terms defined in {{?I-D.ietf-pquip-pqt-hybrid-terminology}}. 
 
 "Post-Quantum Algorithm": An asymmetric cryptographic algorithm that is believed to be secure against attacks using quantum computers as well as classical computers. Post-quantum algorithms can also be called quantum-resistant or quantum-safe algorithms. Examples of quantum-resistant digital signature schemes include ML-DSA and SLH-DSA.
 
+# Applicability of SLH-DSA
+
+Applications that use SLH-DSA need to be aware that the signature sizes of the algorithms specified in this document are generally large. SLH-DSA offers three security levels: 1, 3, and 5, and two parameter variants for each level:
+
+* Small (s) variant, which are optimized for minimal signature size, have signature sizes ranging from 7856 bytes (128-bit) to 29792 bytes (256-bit).
+
+* Fast (f) variant, optimized for faster key generation and signing, have signature sizes ranging from 17088 bytes (128-bit) to 29792 bytes (256-bit). However, they are slower at signature verification.
+
+Despite offering trade-offs between size and performance, all SLH-DSA variants produce significantly larger signatures than traditional signature algorithms. While SLH-DSA increases the size of the TLS 1.3 handshake, its impact on connection performance is minimal in the context of large data transfers, especially over low-loss networks. For instancee, TLS-based protocols are increasingly used to secure long-lived interfaces in critical infrastructure, such as telecommunication networks. In particular, TLS-in-SCTP has been mandated in 3GPP for interfaces such as N2 that use long-lived TLS connections. 
+
 # SLH-DSA SignatureSchemes Types
 
 SLH-DSA {{FIPS205}} utilizes the concept of stateless hash-based signatures. In contrast to stateful signature algorithms, SLH-DSA eliminates the need for maintaining state information during the signing process. SLH-DSA is designed to sign up to 2^64 messages and it offers three security levels. The parameters for security levels 1, 3, and 5 were chosen to provide AES-128, AES-192, and AES-256 bits of security respectively (see Table 2 in Section 10 of {{?I-D.ietf-pquip-pqc-engineers}}). 
@@ -154,25 +164,11 @@ SLH-DSA imposes an upper bound of 2^64 signatures per key. If a key pair were us
 
 ## Key Lifetime Management
 
-Certificates are typically issued with finite lifetimes, and upon rotation, a new key-pair must be generated to obtain a new certificate. For example, if a server certificate is valid for 1 year and each client connection re-authenticates every 12 hours, only 730 signatures would be generated per client. 
-This implies that a single SLH-DSA key could theoretically support up to 2^64 / 730 ≈ 2.52 × 10^16 clients over a certificate's lifetime.
-
 In order to maintain cryptographic safety in high-scale environments, deployments MUST:
 
    *  Rotate SLH-DSA certificates and keys periodically;
-   *  Track the number of signatures generated per SLH-DSA private key to ensure it remains well below the 2^64 signature limit.
-
-These operational safeguards ensure that the number of SLH-DSA signatures generated under a single key remains well within the cryptographic safety margin.
-
-Re-authentication frequency directly impacts signature usage and should be factored into key lifetime planning.
-
-## Re-authentication in Long-Lived TLS Connections
-
-TLS 1.3 does not support post-handshake server authentication by default (see Section 4.6 of {{RFC8446}}). However, in deployments involving long-lived TLS connections, such as DTLS-over-STCP sessions used in 3GPP networks, peer re-authentication can be achieved using Exported Authenticators, as defined in {{RFC9261}}. This mechanism is applicable to all signature algorithms, including PQ schemes such as SLH-DSA, and enables re-authentication with a newly issued certificate without requiring a new TLS handshake.
-
-Re-authentication is typically initiated by the peer that is tracking the remote peer's certificate expiration during a long-lived TLS session. Implementations are recommended to adopt a proactive policy similar to that used by ACME clients ({{RFC8555}}), where certificates are renewed before expiration to ensure continuity of service. TLS servers MAY proactively send an authenticator without a client request (Section 5.2 of {{RFC9261}}), such as when the server is issued a new certificate.
-
-To prevent a thundering herd problem, where a server attempts to re-authenticate to multiple clients at the same time, implementations SHOULD introduce random jitter or time offsets based on each TLS session's initiation time. This distributes re-authentication events over time and minimizes load spikes on the server.
+   *  Monitor the number of signatures generated per SLH-DSA private key to ensure it   
+      remains well below the 2^64 signature limit.
 
 # IANA Considerations
 
