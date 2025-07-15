@@ -96,7 +96,7 @@ This document uses terms defined in {{?I-D.ietf-pquip-pqt-hybrid-terminology}}. 
 
 Applications that use SLH-DSA need to be aware that the signature sizes of the algorithms specified in this document are generally large. SLH-DSA offers three security levels: 1, 3, and 5, and two parameter variants for each level:
 
-* Small (s) variant, which are optimized for minimal signature size, have signature sizes ranging from 7856 bytes (128-bit) to 29792 bytes (256-bit).
+* Small (s) variant, which are optimized for minimal signature size, have signature sizes ranging from 7856 bytes (Level 1) to 29792 bytes (Level 5).
 
 * Fast (f) variant, optimized for faster key generation and signing, have signature sizes ranging from 17088 bytes (128-bit) to 29792 bytes (256-bit). However, they are slower at signature verification.
 
