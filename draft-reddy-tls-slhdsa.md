@@ -166,7 +166,7 @@ SLH-DSA imposes an upper bound of 2^64 signatures per key. If a key pair were us
 
 In order to maintain cryptographic safety in high-scale environments, deployments MUST:
 
-   *  Rotate SLH-DSA certificates and keys periodically;
+   *  Rotate SLH-DSA certificates and keys based on expected signature usage, ensuring ample margin from the 2^64 signature limit.
    *  Monitor the number of signatures generated per SLH-DSA private key to ensure it   
       remains well below the 2^64 signature limit.
 
