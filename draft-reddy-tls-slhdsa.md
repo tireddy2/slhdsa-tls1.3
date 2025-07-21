@@ -100,7 +100,7 @@ Applications that use SLH-DSA need to be aware that the signature sizes of the a
 
 * Fast (f) variant, optimized for faster key generation and signing, have signature sizes ranging from 17088 bytes (128-bit) to 29792 bytes (256-bit). However, they are slower at signature verification.
 
-Despite offering trade-offs between size and performance, all SLH-DSA variants produce significantly larger signatures than traditional signature algorithms. While SLH-DSA increases the size of the TLS 1.3 handshake, its impact on connection performance is minimal in the context of large data transfers, especially over low-loss networks. For instancee, TLS-based protocols are increasingly used to secure long-lived interfaces in critical infrastructure, such as telecommunication networks. In particular, TLS-in-SCTP has been mandated in 3GPP for interfaces such as N2 that use long-lived TLS connections. 
+Despite offering trade-offs between size and performance, all SLH-DSA variants produce significantly larger signatures than traditional signature algorithms. While SLH-DSA increases the size of the TLS 1.3 handshake, its impact on connection performance is minimal in the context of large data transfers, especially over low-loss networks. For instancee, TLS-based protocols are increasingly used to secure long-lived interfaces in critical infrastructure, such as telecommunication networks. In particular, DTLS-in-SCTP has been mandated in 3GPP for interfaces such as N2 that use long-lived TLS connections. 
 
 # SLH-DSA SignatureSchemes Types
 
