@@ -162,8 +162,6 @@ The security considerations discussed in Section 9 of {{I-D.ietf-lamps-x509-slhd
 
 SLH-DSA imposes an upper bound of 2^64 signatures per key. If a key pair were used to sign 10 billion messages per second, it would take over 58 years to sign 2^64 messages. While this limit is extremely large, it may need to be considered if a single SLH-DSA private key was shared between a huge number of TLS servers all making extremely frequent negotiations.
 
-[ My opinion: the below reasoning is a bit silly - 2^64 signatures / TLS negotiations is a *HUGE* quantity - it is quite difficult to come up with a scenario where you can come anywhere close to this number.  Perhaps the best advice might me "don't share your provate key with a billion other servers" - see above computational effort to see why this would be sufficient ]
-
 ## Key Lifetime Management
 
 In order to maintain cryptographic safety in high-scale environments, deployments MUST:
