@@ -102,6 +102,8 @@ Applications that use SLH-DSA need to be aware that the signature sizes of the a
 
 Despite offering trade-offs between size and performance, all SLH-DSA variants produce significantly larger signatures than traditional signature algorithms. While SLH-DSA increases the size of the TLS 1.3 handshake, its impact on connection performance is minimal in the context of large data transfers, especially over low-loss networks. For instancee, TLS-based protocols are increasingly used to secure long-lived interfaces in critical infrastructure, such as telecommunication networks. In particular, DTLS-in-SCTP has been mandated in 3GPP for interfaces such as N2 that use long-lived TLS connections. 
 
+In deployments that aim to minimize handshake size, SLH-DSA may still be adopted for signing X.509 certificates while avoiding its use in TLS handshake messages. This avoids performance concerns associated with large signatures or expensive verification. SLH-DSA is a good choice for improving PQ security of root certificates and intermediate certificates without affecting TLS handshake performance.
+
 # SLH-DSA SignatureSchemes Types
 
 SLH-DSA {{FIPS205}} utilizes the concept of stateless hash-based signatures. In contrast to stateful signature algorithms, SLH-DSA eliminates the need for maintaining state information during the signing process. SLH-DSA is designed to sign up to 2^64 messages and it offers three security levels. The parameters for security levels 1, 3, and 5 were chosen to provide the equivalent of AES-128, AES-192, and AES-256 level of security respectively (see Table 2 in Section 10 of {{?I-D.ietf-pquip-pqc-engineers}}). 
@@ -155,6 +157,14 @@ The signature MUST be computed and verified as specified in {{Section 4.4.3 of R
 The corresponding end-entity certificate when negotiated MUST use id-slh-dsa-sha2-128s, id-slh-dsa-sha2-128f, id-slh-dsa-sha2-192s, id-slh-dsa-sha2-192f, id-slh-dsa-sha2-256s, id-slh-dsa-sha2-256f, id-slh-dsa-shake-128s, id-slh-dsa-shake-128f, id-slh-dsa-shake-192s, id-slh-dsa-shake-192f, id-slh-dsa-shake-256s and id-slh-dsa-shake-256f respectively as defined in {{I-D.ietf-lamps-x509-slhdsa}}}.
 
 The schemes defined in this document MUST NOT be used in TLS 1.2 {{RFC5246}}. A peer that receives ServerKeyExchange or CertificateVerify message in a TLS 1.2 connection with schemes defined in this document MUST abort the connection with an illegal_parameter alert.
+
+# SLH-DSA Variant Selection Guidance
+
+When deploying SLH-DSA in TLS 1.3, the choice of variant involves trade-offs among signing speed, verification cost, signature size, and the underlying hash function. The decision depends heavily on the characteristics and constraints of the target environment. If SHAKE is supported and offers acceptable performance, SHAKE-based variants are generally recommended. In environments where SHAKE is unavailable or performs poorly, SHA2-based variants are a suitable alternative.
+
+The choice between "fast" and "small" variants depends on whether signing or verification performance is more critical in the target environment. Fast variants provide significantly faster signing but incur higher verification costs. Conversely, small variants enable more efficient verification but have slower signing performance. 
+
+Security level requirements also guide the selection. If 128-bit security is sufficient, 128-bit variants can be used. For applications requiring higher assurance, 192-bit or 256-bit variants may be more appropriate.
 
 # Security Considerations
 
