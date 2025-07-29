@@ -102,7 +102,9 @@ Applications that use SLH-DSA need to be aware that the signature sizes of the a
 
 Despite offering trade-offs between size and performance, all SLH-DSA variants produce significantly larger signatures than traditional signature algorithms. While SLH-DSA increases the size of the TLS 1.3 handshake, its impact on connection performance is minimal in the context of large data transfers, especially over low-loss networks. For instancee, TLS-based protocols are increasingly used to secure long-lived interfaces in critical infrastructure, such as telecommunication networks. In particular, DTLS-in-SCTP has been mandated in 3GPP for interfaces such as N2 that use long-lived TLS connections. 
 
-In deployments that aim to minimize handshake size, SLH-DSA may still be adopted for signing X.509 certificates while avoiding its use in TLS handshake messages. This avoids performance concerns associated with large signatures or expensive verification. SLH-DSA is a good choice for improving PQ security of root certificates and intermediate certificates without affecting TLS handshake performance.
+In deployments aiming to minimize handshake size, SLH-DSA may still be adopted for signing X.509 certificates while avoiding its use in the CertificateVerify message, which involves generating a signature over the entire TLS handshake transcript. This helps avoid performance concerns related to large signatures or expensive verification. SLH-DSA is well suited for enhancing the post-quantum security of root and intermediate certificates without affecting TLS handshake performance.
+
+Mechanisms such as Abridged TLS Certificate Chains {{?I-D.ietf-tls-cert-abridge}} and Suppressing CA Certificates {{?I-D.kampanakis-tls-scas-latest}} reduce handshake size by limiting certificate exchange to only end-entity certificates. In such cases, intermediate certificates are assumed to be known to the peer, allowing the use of larger signature algorithms like SLH-DSA for those certificates without adding overhead to the handshake.
 
 # SLH-DSA SignatureSchemes Types
 
@@ -160,7 +162,7 @@ The schemes defined in this document MUST NOT be used in TLS 1.2 {{RFC5246}}. A 
 
 # SLH-DSA Variant Selection Guidance
 
-When deploying SLH-DSA in TLS 1.3, the choice of variant involves trade-offs among signing speed, verification cost, signature size, and the underlying hash function. The decision depends heavily on the characteristics and constraints of the target environment. If SHAKE is supported and offers acceptable performance, SHAKE-based variants are generally recommended. In environments where SHAKE is unavailable or performs poorly, SHA2-based variants are a suitable alternative.
+When deploying SLH-DSA in TLS 1.3, the choice of variant involves trade-offs among signing speed, verification cost, signature size, and the underlying hash function. The decision depends heavily on the characteristics and constraints of the target environment. If SHAKE is supported and offers acceptable performance, SHAKE-based variants are generally recommended for their performance and flexibility. In environments where SHAKE is unavailable or performs poorly, SHA-2 based variants offer comparable security and are a suitable alternative.
 
 The choice between "fast" and "small" variants depends on whether signing or verification performance is more critical in the target environment. Fast variants provide significantly faster signing but incur higher verification costs. Conversely, small variants enable more efficient verification but have slower signing performance. 
 
